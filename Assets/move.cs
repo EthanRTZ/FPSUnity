@@ -30,8 +30,8 @@ public class move : MonoBehaviour
     [Header("Camera")]
     float xRotation = 0f;
     float yRotation = 0f;
-    public float topClamp = 90f; 
-    public float bottomClamp = -20f;
+    public float topClamp = -90f; 
+    public float bottomClamp = 90f;
 
     private Rigidbody rb;
     private Vector3 inputDir;
