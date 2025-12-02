@@ -88,7 +88,7 @@ public class move : MonoBehaviour
         
         xRotation = Mathf.Clamp(xRotation, topClamp, bottomClamp);
         
-        yRotation -= mouseX;
+        yRotation += mouseX;
         
         transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
 
