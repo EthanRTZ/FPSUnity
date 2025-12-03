@@ -27,12 +27,6 @@ public class move : MonoBehaviour
     private float lastWallJumpTime = -10f;
     public float wallCheckPadding = 0.05f;
     
-    [Header("Camera")]
-    float xRotation = 0f;
-    float yRotation = 0f;
-    public float topClamp = -90f; 
-    public float bottomClamp = 90f;
-
     private Rigidbody rb;
     private Vector3 inputDir;
     private bool isSprinting;
@@ -80,17 +74,7 @@ public class move : MonoBehaviour
         float currentSpeed = isSprinting ? sprintspeed : speed;
         Vector3 rawDir = new Vector3(h, 0f, v);
         inputDir = rawDir.normalized * currentSpeed;
-
-        float mouseX = Input.GetAxis("Mouse X")* rotateSpeed * Time.fixedDeltaTime;
-        float mouseY = Input.GetAxis("Mouse Y")* rotateSpeed * Time.fixedDeltaTime;
         
-        xRotation -= mouseY;
-        
-        xRotation = Mathf.Clamp(xRotation, topClamp, bottomClamp);
-        
-        yRotation += mouseX;
-        
-        transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
 
         // Saut : wall-jump prioritaire, sinon saut au sol, sinon double-saut si disponible
         if (Input.GetKeyDown(KeyCode.Space))
