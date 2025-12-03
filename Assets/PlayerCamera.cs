@@ -14,15 +14,18 @@ public class PlayerCamera : MonoBehaviour
 
     void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        // On récupère la souris une seule fois
+        Vector2 mouse = new Vector2(
+            Input.GetAxis("Mouse X"),
+            Input.GetAxis("Mouse Y")
+        ) * mouseSensitivity * Time.deltaTime;
 
-        // Rotation verticale SEULEMENT sur la caméra
-        xRotation -= mouseY;
+        // --- Rotation verticale de la caméra ---
+        xRotation -= mouse.y;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-        // Rotation horizontale SEULEMENT sur le joueur
-        playerBody.Rotate(Vector3.up * mouseX);
+        // --- Rotation horizontale du joueur ---
+        playerBody.Rotate(Vector3.up * mouse.x);
     }
 }
