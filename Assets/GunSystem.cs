@@ -1,5 +1,3 @@
-
-
 using UnityEngine;
 using TMPro;
 
@@ -12,6 +10,9 @@ public class GunSystem : MonoBehaviour
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold;
     int bulletsLeft, bulletsShot;
+
+    // SUITE : ajout d'un champ pour détecter les changements de magazineSize
+    int prevMagazineSize;
 
 
     //bools 
@@ -34,14 +35,25 @@ public class GunSystem : MonoBehaviour
     {
         bulletsLeft = magazineSize;
         readyToShoot = true;
+        prevMagazineSize = magazineSize; // <- initialisation de la valeur précédente
+        UpdateAmmoText(); // <- initialisation de l'affichage
     }
     private void Update()
     {
         MyInput();
 
 
+        // Si le magazineSize change (via Inspector ou code), adapter bulletsLeft et le texte
+        if (magazineSize != prevMagazineSize)
+        {
+            // S'assurer que bulletsLeft ne dépasse pas le nouveau magazineSize
+            bulletsLeft = Mathf.Clamp(bulletsLeft, 0, magazineSize);
+            prevMagazineSize = magazineSize;
+            UpdateAmmoText();
+        }
+
         //SetText
-        text.SetText(bulletsLeft + " / " + magazineSize);
+        // suppression de la mise à jour par frame pour ne mettre à jour que lorsque nécessaire
     }
     private void MyInput()
     {
@@ -102,6 +114,7 @@ public class GunSystem : MonoBehaviour
         bulletsLeft--;
         bulletsShot--;
 
+        UpdateAmmoText(); // <- mise à jour après tir
 
         Invoke("ResetShot", timeBetweenShooting);
 
@@ -116,11 +129,43 @@ public class GunSystem : MonoBehaviour
     private void Reload()
     {
         reloading = true;
+        if (text != null) text.SetText("Reloading..."); // affiche l'état de rechargement
         Invoke("ReloadFinished", reloadTime);
     }
     private void ReloadFinished()
     {
         bulletsLeft = magazineSize;
         reloading = false;
+        UpdateAmmoText(); // <- mise à jour après fin de rechargement
+    }
+
+    // Nouvelle méthode pour centraliser l'affichage des munitions
+    private void UpdateAmmoText()
+    {
+        if (text == null) return;
+        text.SetText(bulletsLeft + " / " + magazineSize);
+    }
+
+    // OnValidate est appelé dans l'éditeur quand une valeur change dans l'Inspector
+    private void OnValidate()
+    {
+        // Eviter erreurs hors jeu : mettre à jour prevMagazineSize et bulletsLeft en conséquence
+        if (!Application.isPlaying)
+        {
+            prevMagazineSize = magazineSize;
+            bulletsLeft = Mathf.Clamp(bulletsLeft, 0, magazineSize);
+            if (text != null) text.SetText(bulletsLeft + " / " + magazineSize);
+        }
+    }
+
+    // Méthode publique optionnelle pour changer dynamiquement la taille du chargeur par code
+    public void SetMagazineSize(int newSize, bool refillToMax = false)
+    {
+        if (newSize < 1) newSize = 1;
+        magazineSize = newSize;
+        prevMagazineSize = magazineSize;
+        if (refillToMax) bulletsLeft = magazineSize;
+        else bulletsLeft = Mathf.Clamp(bulletsLeft, 0, magazineSize);
+        UpdateAmmoText();
     }
 }
