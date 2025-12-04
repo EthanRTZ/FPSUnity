@@ -11,7 +11,7 @@ public class GunSystem : MonoBehaviour
     public bool allowButtonHold;
     int bulletsLeft, bulletsShot;
 
-    // SUITE : ajout d'un champ pour détecter les changements de magazineSize
+    // SUITE : ajout d'un champ pour détecter les changements de magazineSize 
     int prevMagazineSize;
 
 
@@ -83,32 +83,43 @@ public class GunSystem : MonoBehaviour
 
         //Calculate Direction with Spread
         Vector3 direction = fpsCam.transform.forward;
-        direction += fpsCam.transform.right * x;
-        direction += fpsCam.transform.up * y;
+        direction += fpsCam.transform.right * Random.Range(-spread, spread);
+        direction += fpsCam.transform.up * Random.Range(-spread, spread);
         direction.Normalize();
 
 
 
-        //RayCast
-        if (Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range, whatIsEnemy))
-        {
-            Debug.Log(rayHit.collider.name);
-        }
-
-
-
-        //Graphics
+        // Raycast unique : si on touche quelque chose on gère les dégâts + le bullet hole
         if (Physics.Raycast(fpsCam.transform.position, direction, out rayHit, range))
         {
-            Debug.Log(rayHit.collider.name);
+            Debug.Log("Hit: " + rayHit.collider.name);
 
-            // Place le trou de balle
-            Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.LookRotation(rayHit.normal));
+
+            // Vérifie si l'objet touché est dans le LayerMask whatIsEnemy
+            int hitLayer = rayHit.collider.gameObject.layer;
+            if ((whatIsEnemy.value & (1 << hitLayer)) != 0)
+            {
+                var rd = rayHit.collider.GetComponentInParent<ReceiveDamage>();
+                if (rd != null)
+                {
+                    rd.GetDamage(damage);
+                }
+            }
+
+
+            // Place le trou de balle si défini
+            if (bulletHoleGraphic != null)
+                Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.LookRotation(rayHit.normal));
         }
 
-        GameObject flash = Instantiate(muzzleFlash, attackPoint.position, attackPoint.rotation);
-        flash.GetComponent<ParticleSystem>().Play();
 
+        // Muzzle flash (si défini)
+        if (muzzleFlash != null && attackPoint != null)
+        {
+            GameObject flash = Instantiate(muzzleFlash, attackPoint.position, attackPoint.rotation);
+            var ps = flash.GetComponent<ParticleSystem>();
+            if (ps != null) ps.Play();
+        }
 
 
         bulletsLeft--;

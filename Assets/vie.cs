@@ -11,6 +11,7 @@ using TMPro;
         
         void Update()
         {
+            //calcul de la vie
             vieBar.fillAmount = vie / vieMax;
             vieText.text = vie + " / " + vieMax;
         }
