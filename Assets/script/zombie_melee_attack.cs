@@ -26,6 +26,9 @@ namespace DefaultNamespace
 
         float cooldownTimer = -1f; // Changé de 0f à -1f pour permettre attaque immédiate
 
+        // Référence au composant ReceiveDamage du zombie
+        private ReceiveDamage receiveDamage;
+
         void Reset()
         {
             attackPoint = transform;
@@ -35,10 +38,32 @@ namespace DefaultNamespace
         {
             // Permettre une attaque immédiate au démarrage
             cooldownTimer = -1f;
+            
+            // Récupérer le composant ReceiveDamage du zombie
+            receiveDamage = GetComponent<ReceiveDamage>();
+            if (receiveDamage == null)
+            {
+                receiveDamage = GetComponentInParent<ReceiveDamage>();
+            }
+            
+            if (receiveDamage == null && showDebugLogs)
+            {
+                Debug.LogWarning($"[Zombie] ReceiveDamage non trouvé sur {gameObject.name}");
+            }
         }
 
         void Update()
         {
+            // Ne rien faire si le zombie est mort
+            if (receiveDamage != null && receiveDamage.health <= 0f)
+            {
+                if (showDebugLogs)
+                {
+                    Debug.Log($"[Zombie] {gameObject.name} est mort, arrêt des attaques");
+                }
+                return;
+            }
+            
             // Décrémenter le timer
             if (cooldownTimer > 0f)
             {

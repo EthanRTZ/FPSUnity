@@ -3,12 +3,22 @@ using UnityEngine;
 public class move : MonoBehaviour
 {
     [Header("Références")]
-    public Transform orientation; // assigner dans l'inspecteur ou fallback sur this.transform
+    public Transform orientation;
 
     [Header("Accroupi")]
-    public float crouchspeed;
-    public float crouchYScale;
+    public float crouchspeed = 2.5f;
+    public float crouchYScale = 0.5f;
     private float startYScale;
+    private bool isCrouching = false;
+    
+    [Header("Glissade")]
+    public float slideForce = 15f;
+    public float slideDuration = 1.5f;
+    public float slideYScale = 0.5f;
+    public float slideFriction = 0.2f; // Friction appliquée pendant la glissade
+    private bool isSliding = false;
+    private float slideTimer = 0f;
+    private Vector3 slideDirection;
     
     [Header("Mouvement")]
     public int speed = 5;
@@ -31,13 +41,9 @@ public class move : MonoBehaviour
     private Vector3 inputDir;
     private bool isSprinting;
 
-    // wall contact tracking
     private bool isTouchingWall = false;
     private Vector3 wallNormal = Vector3.zero;
-
     private bool canWallJump = false;
-
-    // suivi du double-saut
     private bool hasDoubleJumped = false;
 
     void Start()
@@ -47,11 +53,9 @@ public class move : MonoBehaviour
         if (rb != null)
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-        // fallback : si orientation non assignée dans l'inspecteur, utiliser ce transform
         if (orientation == null)
             orientation = this.transform;
 
-        // initial ground check rapide
         if (Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f))
             canJump = true;
         hasDoubleJumped = false;
@@ -61,7 +65,7 @@ public class move : MonoBehaviour
 
     void Update()
     {
-        // Input & rotation (ne touche pas à la caméra)
+        // Input mouvement
         float h = 0f;
         if (Input.GetKey(KeyCode.D)) h = 1f;
         else if (Input.GetKey(KeyCode.A)) h = -1f;
@@ -71,17 +75,57 @@ public class move : MonoBehaviour
         else if (Input.GetKey(KeyCode.S)) v = -1f;
 
         isSprinting = Input.GetKey(KeyCode.LeftShift);
-        float currentSpeed = isSprinting ? sprintspeed : speed;
-        Vector3 rawDir = new Vector3(h, 0f, v);
-        inputDir = rawDir.normalized * currentSpeed;
         
+        // Gestion de la glissade
+        if (isSliding)
+        {
+            slideTimer -= Time.deltaTime;
+            // Arrêter la glissade si Ctrl est relâché OU timer écoulé OU pas au sol
+            if (Input.GetKeyUp(KeyCode.LeftControl) || slideTimer <= 0f || !canJump)
+            {
+                StopSlide();
+            }
+            // Pendant la glissade, on ignore les inputs normaux
+            inputDir = Vector3.zero;
+        }
+        else
+        {
+            // Vitesse selon l'état (crouch ou normal)
+            float currentSpeed = isCrouching ? crouchspeed : (isSprinting ? sprintspeed : speed);
+            Vector3 rawDir = new Vector3(h, 0f, v);
+            inputDir = rawDir.normalized * currentSpeed;
+        }
 
-        // Saut : wall-jump prioritaire, sinon saut au sol, sinon double-saut si disponible
+        // Détection Ctrl pour crouch ou slide
+        if (Input.GetKeyDown(KeyCode.LeftControl) && canJump)
+        {
+            if (isSprinting && (h != 0f || v != 0f))
+            {
+                // Sprint + mouvement + Ctrl = Glissade
+                StartSlide(new Vector3(h, 0f, v).normalized);
+            }
+            else if (!isSliding)
+            {
+                // Marche + Ctrl = Accroupissement
+                StartCrouch();
+            }
+        }
+
+        // Désaccroupissement avec Ctrl (toggle)
+        if (Input.GetKeyUp(KeyCode.LeftControl) && isCrouching)
+        {
+            StopCrouch();
+        }
+
+        // Saut
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (rb == null) return;
 
-            // 1) wall-jump prioritaire si contact mural et cooldown écoulé
+            // Annuler crouch/slide si on saute
+            if (isCrouching) StopCrouch();
+            if (isSliding) StopSlide();
+
             if (isTouchingWall && Time.time > lastWallJumpTime + wallJumpCooldown)
             {
                 Vector3 away = new Vector3(wallNormal.x, 0f, wallNormal.z).normalized;
@@ -90,10 +134,8 @@ public class move : MonoBehaviour
                 lastWallJumpTime = Time.time;
                 canJump = false;
                 isTouchingWall = false;
-                // permettre le deuxième saut après wall-jump
                 hasDoubleJumped = false;
             }
-            // 2) saut au sol
             else if (canJump)
             {
                 Vector3 vel = rb.linearVelocity;
@@ -101,7 +143,6 @@ public class move : MonoBehaviour
                 canJump = false;
                 hasDoubleJumped = false;
             }
-            // 3) double-saut si pas encore utilisé
             else if (!hasDoubleJumped)
             {
                 Vector3 vel = rb.linearVelocity;
@@ -115,7 +156,6 @@ public class move : MonoBehaviour
     {
         if (rb == null) return;
 
-        // Ground check continu
         bool grounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f);
         if (grounded && rb.linearVelocity.y <= 0.05f)
         {
@@ -123,23 +163,70 @@ public class move : MonoBehaviour
             hasDoubleJumped = false;
         }
 
-        MovePlayer();
+        if (isSliding)
+        {
+            ApplySlide();
+        }
+        else
+        {
+            MovePlayer();
+        }
+    }
+
+    private void StartCrouch()
+    {
+        isCrouching = true;
+        transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
+    }
+
+    private void StopCrouch()
+    {
+        isCrouching = false;
+        transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+    }
+
+    private void StartSlide(Vector3 direction)
+    {
+        isSliding = true;
+        slideTimer = slideDuration;
+        
+        // Direction de la glissade dans l'espace monde
+        Transform refer = (orientation != null) ? orientation : this.transform;
+        slideDirection = (refer.forward * direction.z + refer.right * direction.x).normalized;
+        
+        // Réduire la taille du personnage
+        transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
+        
+        // Appliquer la force initiale de glissade
+        rb.AddForce(slideDirection * slideForce, ForceMode.VelocityChange);
+    }
+
+    private void StopSlide()
+    {
+        isSliding = false;
+        slideTimer = 0f;
+        transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+    }
+
+    private void ApplySlide()
+    {
+        // Appliquer une friction progressive pour ralentir la glissade
+        Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        Vector3 friction = -horizontalVel * slideFriction;
+        rb.AddForce(friction, ForceMode.Force);
     }
 
     private void MovePlayer()
     {
         if (rb == null) return;
 
-        // direction monde à partir de orientation (fallback géré en Start)
         Transform refer = (orientation != null) ? orientation : this.transform;
         Vector3 worldDir = refer.forward * inputDir.z + refer.right * inputDir.x;
 
-        // appliquer la composante horizontale via velocity tout en conservant la verticale physique
         Vector3 targetVel = worldDir;
         Vector3 newVel = new Vector3(targetVel.x, rb.linearVelocity.y, targetVel.z);
         rb.linearVelocity = newVel;
 
-        // anti-tunneling simple : si il y a un obstacle très proche dans la direction de déplacement, annuler la composante horizontale
         if (worldDir.sqrMagnitude > 0.001f)
         {
             Vector3 stepDirNorm = worldDir.normalized;
@@ -148,7 +235,6 @@ public class move : MonoBehaviour
             {
                 if (hit.collider.CompareTag("mur"))
                 {
-                    // stopper la vitesse horizontale vers le mur
                     Vector3 horizontalVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
                     Vector3 blockedDir = Vector3.Project(horizontalVel, stepDirNorm);
                     Vector3 remaining = horizontalVel - blockedDir;
@@ -160,12 +246,10 @@ public class move : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Si on touche une surface, vérifier la normale principale pour déterminer sol ou mur
         foreach (ContactPoint cp in collision.contacts)
         {
             if (cp.normal.y > 0.5f)
             {
-                // contact sol/plancher
                 canJump = true;
                 hasDoubleJumped = false;
                 break;
