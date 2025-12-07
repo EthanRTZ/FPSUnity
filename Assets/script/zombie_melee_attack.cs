@@ -7,9 +7,9 @@ namespace DefaultNamespace
         // Dégâts infligés par l'attaque de mêlée
         public float attackDamage = 10f;
         // Temps entre deux attaques (en secondes)
-        public float attackCooldown = 1.5f;
+        public float attackCooldown = 1.0f;
         // Rayon de détection des cibles
-        public float attackRadius = 1.5f;
+        public float attackRadius = 2.0f;
         // Layer des cibles (ex : Player)
         public LayerMask targetLayer;
         // Point d'origine de l'attaque (si null, utilise transform)
@@ -21,34 +21,59 @@ namespace DefaultNamespace
         public string attackTrigger = "Attack";
         // Option : n'attaquer qu'une fois par root si plusieurs colliders touchent la zone
         public bool uniquePerRoot = true;
+        // Debug : afficher les logs de détection
+        public bool showDebugLogs = true;
 
-        float cooldownTimer = 0f;
+        float cooldownTimer = -1f; // Changé de 0f à -1f pour permettre attaque immédiate
 
         void Reset()
         {
             attackPoint = transform;
         }
+        
+        void Start()
+        {
+            // Permettre une attaque immédiate au démarrage
+            cooldownTimer = -1f;
+        }
 
         void Update()
         {
-            cooldownTimer -= Time.deltaTime;
-            if (cooldownTimer <= 0f)
+            // Décrémenter le timer
+            if (cooldownTimer > 0f)
             {
-                TryAttack();
+                cooldownTimer -= Time.deltaTime;
+            }
+            
+            // Vérifier en permanence s'il y a des cibles dans la zone
+            Vector3 origin = attackPoint != null ? attackPoint.position : transform.position;
+            Collider[] hits = Physics.OverlapSphere(origin, attackRadius, targetLayer);
+            
+            if (showDebugLogs)
+            {
+                Debug.Log($"[Zombie] Détecte {hits.Length} cible(s) dans rayon {attackRadius}m - Cooldown: {cooldownTimer:F2}s - CanAttack: {cooldownTimer <= 0f}");
+            }
+            
+            // Si des cibles sont détectées ET que le cooldown est écoulé
+            if (hits.Length > 0 && cooldownTimer <= 0f)
+            {
+                Attack(hits);
             }
         }
 
-        void TryAttack()
+        void Attack(Collider[] hits)
         {
-            Vector3 origin = attackPoint != null ? attackPoint.position : transform.position;
-            Collider[] hits = Physics.OverlapSphere(origin, attackRadius, targetLayer);
-            if (hits.Length == 0) return;
-
+            if (showDebugLogs)
+            {
+                Debug.Log($"[Zombie] ATTAQUE ! {hits.Length} cible(s) touchée(s)");
+            }
+            
             if (animator != null && !string.IsNullOrEmpty(attackTrigger))
             {
                 animator.SetTrigger(attackTrigger);
             }
 
+            // Réinitialiser le cooldown pour la prochaine attaque
             cooldownTimer = attackCooldown;
 
             if (uniquePerRoot)
@@ -59,6 +84,12 @@ namespace DefaultNamespace
                     Transform root = col.transform.root;
                     if (hitRoots.Contains(root)) continue;
                     hitRoots.Add(root);
+                    
+                    if (showDebugLogs)
+                    {
+                        Debug.Log($"[Zombie] Applique {attackDamage} dégâts à {root.name}");
+                    }
+                    
                     ApplyDamageToTarget(root.gameObject);
                 }
             }
@@ -66,6 +97,11 @@ namespace DefaultNamespace
             {
                 foreach (var col in hits)
                 {
+                    if (showDebugLogs)
+                    {
+                        Debug.Log($"[Zombie] Applique {attackDamage} dégâts à {col.name}");
+                    }
+                    
                     ApplyDamageToTarget(col.gameObject);
                 }
             }

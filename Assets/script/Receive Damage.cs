@@ -53,13 +53,14 @@ public class ReceiveDamage : MonoBehaviour
     // Permet de recevoir des dommages (float pour points de vie)
     public void GetDamage(float damage)
     {
-        // Ne rien faire si déjà mort
-        if (isDead) return;
-
-        if (isInvulnerable)
-            return;
+        Debug.Log($"[ReceiveDamage] GetDamage appelé sur {gameObject.name} - Dégâts: {damage} - Vie avant: {health}");
         
-        isInvulnerable = true;
+        // Ne rien faire si déjà mort
+        if (isDead)
+        {
+            Debug.Log($"[ReceiveDamage] {gameObject.name} est déjà mort, dégâts ignorés");
+            return;
+        }
 
         // Réinitialise le timer d'invulnérabilité au moment du hit
         timeSinceLastHit = 0.0f;
@@ -69,6 +70,8 @@ public class ReceiveDamage : MonoBehaviour
 
         // S'assurer que la vie ne tombe pas sous zéro
         health = Mathf.Max(0f, health);
+        
+        Debug.Log($"[ReceiveDamage] Vie après dégâts: {health}/{maxHealth}");
 
         // Informer les composants (enfant/parent) du changement de vie
         // On envoie vers les enfants ET vers les parents pour couvrir toutes les configurations
@@ -85,6 +88,7 @@ public class ReceiveDamage : MonoBehaviour
         // Sinon
         else
         {
+            Debug.Log($"[ReceiveDamage] {gameObject.name} est mort !");
             // Marque comme mort pour éviter double traitement
             isDead = true;
             // Notify components on this GameObject AND children, et aussi parents
