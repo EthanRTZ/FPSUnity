@@ -30,6 +30,10 @@ public class GunSystem : MonoBehaviour
     public GameObject muzzleFlash, bulletHoleGraphic;
     public TextMeshProUGUI text;
 
+    //Sound
+    public AudioSource audioSource;
+    public AudioClip shootSound;
+
 
     private void Awake()
     {
@@ -74,6 +78,12 @@ public class GunSystem : MonoBehaviour
     private void Shoot()
     {
         readyToShoot = false;
+
+        // Jouer le son de tir
+        if (shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
 
 
         //Spread
