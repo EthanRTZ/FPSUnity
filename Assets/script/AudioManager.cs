@@ -22,15 +22,7 @@ public class AudioManager : MonoBehaviour
     public void SetVolume(float volume)
     {
         AudioSource audioSource = GetComponent<AudioSource>();
-        if (audioSource != null)
-        {
-            audioSource.volume = volume;
-            Debug.Log("Volume changé à : " + volume);
-        }
-        else
-        {
-            Debug.LogError("Aucun AudioSource trouvé sur l'AudioManager !");
-        }
+        audioSource.volume = volume;
         PlayerPrefs.SetFloat("MusicVolume", volume);
         PlayerPrefs.Save();
     }

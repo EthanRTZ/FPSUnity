@@ -202,7 +202,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2108133125}
+      - m_Target: {fileID: 2108133126}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: Quit
         m_Mode: 1
@@ -1003,7 +1003,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2108133125}
+      - m_Target: {fileID: 2108133126}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: PlayGame
         m_Mode: 1
@@ -1096,6 +1096,7 @@ GameObject:
   - component: {fileID: 2014034258}
   - component: {fileID: 2014034257}
   - component: {fileID: 2014034259}
+  - component: {fileID: 2014034260}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -1225,6 +1226,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5668ab7eae090fd288972cca0bffb3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2014034260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2014034256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8936dd2c3c6b44b009f458f60b0b2f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2017036240
@@ -1375,6 +1388,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2108133124}
   - component: {fileID: 2108133125}
+  - component: {fileID: 2108133126}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -1414,6 +1428,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08847e2533cbd85be8e1a2e723dd77fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2108133126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108133123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c484e300b393b4458ad5137dccd0fca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2125928983
@@ -1499,7 +1525,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2108133125}
+      - m_Target: {fileID: 2108133126}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: Options
         m_Mode: 1
