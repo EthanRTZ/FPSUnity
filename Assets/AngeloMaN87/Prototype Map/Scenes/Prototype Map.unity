@@ -759,7 +759,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 385420725}
         m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: SetSensitivityX
+        m_MethodName: SetSensibiliteX
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -885,9 +885,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenuUI: {fileID: 1578640638}
-  sensitivitySliderX: {fileID: 0}
-  sensitivitySliderY: {fileID: 0}
-  defaultSensitivity: 100
+  SensibiliteSliderX: {fileID: 363808607}
+  SensibiliteSliderY: {fileID: 1304605136}
+  SensibiliteBase: 200
 --- !u!1 &393995009
 GameObject:
   m_ObjectHideFlags: 0
@@ -1060,6 +1060,56 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &451030251
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 451030253}
+  - component: {fileID: 451030252}
+  m_Layer: 0
+  m_Name: ZombieSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &451030252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 451030251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e89b24fab60f53723ac7dbd15c016e76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zombiePrefab: {fileID: 1077487276}
+  numberOfZombies: 10
+  spawnRadius: 30
+  minDistanceBetweenZombies: 100
+  spawnCenterOffset: {x: 0, y: 0, z: 0}
+  showSpawnZone: 1
+--- !u!4 &451030253
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 451030251}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &516603498
 GameObject:
   m_ObjectHideFlags: 0
@@ -1071,7 +1121,7 @@ GameObject:
   - component: {fileID: 516603500}
   - component: {fileID: 516603499}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: AudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2287,7 +2337,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 385420725}
         m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: SetSensitivityY
+        m_MethodName: SetSensibiliteY
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3091,8 +3141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8848d334dd86c4d579884ebe39906319, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivityX: 200
-  mouseSensitivityY: 200
+  mouseSensibiliteX: 200
+  mouseSensibiliteY: 200
   playerBody: {fileID: 2023966731}
 --- !u!4 &1812057062 stripped
 Transform:
@@ -3930,3 +3980,4 @@ SceneRoots:
   - {fileID: 1017677031}
   - {fileID: 516603500}
   - {fileID: 385420724}
+  - {fileID: 451030253}
