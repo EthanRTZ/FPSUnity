@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using TMPro;
 
 public class Grenade : MonoBehaviour
 {
@@ -14,16 +15,67 @@ public class Grenade : MonoBehaviour
     public float damageRadius = 3f; // Rayon des dégâts
     public float explosionDamage = 50f; // Dégâts infligés (50 points au lieu de tuer)
     public GameObject explosionEffect; // Effet visuel d'explosion (optionnel)
+    public AudioClip launchSound; // Son du lancer (optionnel)
+    public AudioClip explosionSound; // Son de l'explosion (optionnel)
+    public float soundVolume = 1f; // Volume des sons
+    
+    // Grenades system
+    public int maxGrenades = 3; // Nombre maximum de grenades
+    public float grenadeRegenTime = 60f; // Régénération toutes les 60 secondes
+    public TextMeshProUGUI grenadeText; // Texte UI pour afficher le nombre de grenades
+    public TextMeshProUGUI noGrenadeText; // Texte UI pour le message "pas de grenade"
+    
+    private int currentGrenades; // Nombre actuel de grenades
+    private float grenadeRegenTimer; // Timer pour la régénération
+
+    private void Awake()
+    {
+        currentGrenades = maxGrenades;
+        grenadeRegenTimer = 0f;
+        UpdateGrenadeText();
+        UpdateNoGrenadeText();
+    }
 
     void Update()
     {
+        // Gestion de la régénération des grenades
+        if (currentGrenades < maxGrenades)
+        {
+            grenadeRegenTimer += Time.deltaTime;
+            if (grenadeRegenTimer >= grenadeRegenTime)
+            {
+                currentGrenades++;
+                grenadeRegenTimer = 0f;
+                UpdateGrenadeText();
+                UpdateNoGrenadeText();
+            }
+        }
+
+        // Mettre à jour l'affichage du timer en temps réel
+        if (currentGrenades < maxGrenades)
+        {
+            UpdateGrenadeText();
+        }
+
         if (Input.GetKeyDown(KeyCode.G))
             Launch();
     }
 
     void Launch()
     {
+        // Vérifier s'il y a des grenades disponibles
+        if (currentGrenades <= 0)
+        {
+            return;
+        }
+
         if (grenadePrefab == null || spawnPoint == null) return;
+
+        // Jouer le son de lancer (optionnel)
+        if (launchSound != null)
+        {
+            AudioSource.PlayClipAtPoint(launchSound, spawnPoint.position, soundVolume);
+        }
 
         GameObject g = Instantiate(grenadePrefab, spawnPoint.position, Quaternion.identity);
 
@@ -54,6 +106,47 @@ public class Grenade : MonoBehaviour
         explosion.damageRadius = damageRadius;
         explosion.damage = explosionDamage;
         explosion.explosionEffect = explosionEffect;
+        explosion.explosionSound = explosionSound;
+        explosion.soundVolume = soundVolume;
+
+        // Décrémenter le nombre de grenades et mettre à jour l'affichage
+        currentGrenades--;
+        grenadeRegenTimer = 0f; // Réinitialiser le timer lors du lancer
+        UpdateGrenadeText();
+        UpdateNoGrenadeText();
+    }
+
+    // Méthode pour mettre à jour l'affichage du nombre de grenades avec timer
+    private void UpdateGrenadeText()
+    {
+        if (grenadeText == null) return;
+        
+        if (currentGrenades <= 0)
+        {
+            // Afficher le timer de régénération
+            float timeRemaining = grenadeRegenTime - grenadeRegenTimer;
+            grenadeText.SetText($"0 / {maxGrenades} ({Mathf.Ceil(timeRemaining)}s)");
+        }
+        else
+        {
+            grenadeText.SetText(currentGrenades + " / " + maxGrenades);
+        }
+    }
+
+    // Méthode pour mettre à jour le message d'absence de grenades
+    private void UpdateNoGrenadeText()
+    {
+        if (noGrenadeText == null) return;
+        
+        if (currentGrenades <= 0)
+        {
+            noGrenadeText.SetText("Plus de grenade!");
+            noGrenadeText.gameObject.SetActive(true);
+        }
+        else
+        {
+            noGrenadeText.gameObject.SetActive(false);
+        }
     }
 }
 
@@ -65,6 +158,8 @@ public class GrenadeExplosion : MonoBehaviour
     [HideInInspector] public float damageRadius;
     [HideInInspector] public float damage;
     [HideInInspector] public GameObject explosionEffect;
+    [HideInInspector] public AudioClip explosionSound;
+    [HideInInspector] public float soundVolume;
     
     private bool hasExploded = false; // Flag pour éviter les explosions multiples
 
@@ -86,16 +181,17 @@ public class GrenadeExplosion : MonoBehaviour
         
         Vector3 pos = transform.position;
 
+        // Jouer le son d'explosion
+        if (explosionSound != null)
+        {
+            AudioSource.PlayClipAtPoint(explosionSound, pos, soundVolume);
+        }
+
         // Créer l'effet d'explosion si défini
         if (explosionEffect != null)
         {
-            Debug.Log($"[Grenade] Création de l'effet d'explosion à {pos}");
             GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
             // Ne pas forcer la destruction - l'effet gère lui-même son cycle de vie
-        }
-        else
-        {
-            Debug.LogWarning("[Grenade] Aucun effet d'explosion assigné dans l'inspecteur!");
         }
 
         // Force physique
@@ -119,7 +215,6 @@ public class GrenadeExplosion : MonoBehaviour
             if (health != null)
             {
                 health.GetDamage(damage);
-                Debug.Log($"[Grenade] Dégâts infligés à {c.gameObject.name}: {damage}");
             }
         }
 
