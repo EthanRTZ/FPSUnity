@@ -4,20 +4,33 @@ using DefaultNamespace;
 
 public class WaveManager : MonoBehaviour
 {
+    // Singleton pour éviter plusieurs instances
+    public static WaveManager Instance { get; private set; }
+
     [Header("Paramètres des Vagues")]
     public ZombieSpawner zombieSpawner; // Référence au ZombieSpawner
     public int nombreMaxManches = 10;
 
     [Header("Affichage")]
     public UnityEngine.UI.Text texteVague;
+    public UnityEngine.UI.Text zombieRestant;
 
     private int mancheActuelle = 0;
     private List<MonsterController> zombiesActuels = new List<MonsterController>();
     private DifficultyManager.DifficultySettings parametresDifficulte;
     private float timerDelaiManche = 0f;
     private bool enDelai = false;
-    private bool peutSpawner = true;
-    private bool delaiEnCoursDeMarrage = false; // Flag pour éviter de relancer le délai plusieurs fois
+    private bool mancheEnCours = false; // Flag pour savoir si une manche est active
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     void Start()
     {
@@ -30,13 +43,20 @@ public class WaveManager : MonoBehaviour
 
         // Récupérer les paramètres de difficulté
         parametresDifficulte = DifficultyManager.Instance.ObtenirParametresActuels();
-
-        // Démarrer la première manche automatiquement
         DemarrerManche();
     }
 
     void Update()
     {
+        // Mettre à jour le texte des zombies restants
+        if(zombieRestant != null){
+            int valZombieRes = GetNombreZombiesRestants();
+            zombieRestant.text = $"Zombies : {valZombieRes}";
+        }
+        
+        // Nettoyer la liste des zombies morts
+        zombiesActuels.RemoveAll(z => z == null);
+
         // Si on est en délai entre les manches
         if (enDelai)
         {
@@ -45,33 +65,45 @@ public class WaveManager : MonoBehaviour
             if (timerDelaiManche <= 0f)
             {
                 enDelai = false;
-                peutSpawner = true;
+                Debug.Log($"[WaveManager] Délai écoulé, démarrage de la prochaine manche...");
 
+                // Après le délai, démarrer la prochaine manche
                 if (mancheActuelle < nombreMaxManches)
                 {
-                    DemarrerManche();
+                    DemarrerProchaineManche();
                 }
             }
         }
-
-        // Vérifier si tous les zombies sont morts (une seule fois)
-        if (peutSpawner == false && zombiesActuels.Count == 0 && !delaiEnCoursDeMarrage && mancheActuelle < nombreMaxManches)
+        // Vérifier si tous les zombies sont morts ET qu'une manche est en cours ET qu'on n'est PAS en délai
+        else if (mancheEnCours && zombiesActuels.Count == 0 && !enDelai && mancheActuelle < nombreMaxManches)
         {
-            delaiEnCoursDeMarrage = true; // Marquer que le délai est en cours
+            // Tous les zombies sont morts, on arrête la manche et on lance le délai
+            mancheEnCours = false;
             enDelai = true;
             timerDelaiManche = parametresDifficulte.delaiEntreManches;
         }
 
-        // Nettoyer la liste des zombies morts
-        zombiesActuels.RemoveAll(z => z == null);
+
     }
 
     void DemarrerManche()
     {
-        mancheActuelle++;
-        peutSpawner = false;
-        delaiEnCoursDeMarrage = false; // Réinitialiser le flag pour la prochaine fois
+        // Cette fonction est appelée au Start pour la première manche
+        mancheActuelle = 1;
+        SpawnerZombiesManche();
+        mancheEnCours = true; // Activer APRÈS le spawn
+    }
 
+    void DemarrerProchaineManche()
+    {
+        // Cette fonction est appelée après le délai pour les manches suivantes
+        mancheActuelle++;
+        SpawnerZombiesManche();
+        mancheEnCours = true; // Activer APRÈS le spawn
+    }
+
+    void SpawnerZombiesManche()
+    {
         if (mancheActuelle > nombreMaxManches)
         {
             return;
@@ -119,17 +151,8 @@ public class WaveManager : MonoBehaviour
                 zombiesActuels.Add(zombie);
             }
 
-            // Ajouter les anciens zombies toujours vivants
-            for (int i = 0; i < nombreAvant; i++)
-            {
-                if (zombiesAvant[i] != null)
-                {
-                    zombiesActuels.Add(zombiesAvant[i]);
-                }
-            }
-        }
 
-        peutSpawner = false; // Empêcher de respawner avant que tous soient morts
+        }
     }
 
     // Getter pour afficher le numéro de manche actuelle
