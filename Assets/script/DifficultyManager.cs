@@ -22,7 +22,7 @@ public class DifficultyManager : MonoBehaviour
     {
         public int zombiesParManche = 5;
         public float delaiEntreManches = 2f;
-        public float degatsZombie = 10f;
+        public float degatsZombie = 20f;
     }
 
     [Header("Paramètres des Difficultés")]
@@ -30,21 +30,21 @@ public class DifficultyManager : MonoBehaviour
     {
         zombiesParManche = 3,
         delaiEntreManches = 2f,
-        degatsZombie = 5f
+        degatsZombie = 10f
     };
 
     public DifficultySettings normal = new DifficultySettings
     {
         zombiesParManche = 5,
         delaiEntreManches = 2f,
-        degatsZombie = 10f
+        degatsZombie = 20f
     };
 
     public DifficultySettings difficile = new DifficultySettings
     {
         zombiesParManche = 8,
         delaiEntreManches = 2f,
-        degatsZombie = 15f
+        degatsZombie = 25f
     };
 
     void Awake()

@@ -47,13 +47,6 @@ public class DifficultyMenu : MonoBehaviour
         {
             DifficultyManager.Instance.DefinirDifficulte(difficulte);
             MettreAJourAffichage();
-
-            // Debug : afficher les paramètres
-            var parametres = DifficultyManager.Instance.ObtenirParametresActuels();
-            Debug.Log($"🎯 Difficulté sélectionnée : {difficulte}");
-            Debug.Log($"📊 Zombies par manche : {parametres.zombiesParManche}");
-            Debug.Log($"⏱️ Délai entre manches : {parametres.delaiEntreManches}s");
-            Debug.Log($"💢 Dégâts des zombies : {parametres.degatsZombie}");
         }
     }
 
