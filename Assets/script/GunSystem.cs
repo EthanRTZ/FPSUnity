@@ -14,6 +14,8 @@ public class GunSystem : MonoBehaviour
     // SUITE : ajout d'un champ pour détecter les changements de magazineSize 
     int prevMagazineSize;
 
+    // Nouveau : option pour charger depuis la classe sélectionnée
+    public bool loadFromSelectedClass = true;
 
     //bools 
     bool shooting, readyToShoot, reloading;
@@ -37,10 +39,50 @@ public class GunSystem : MonoBehaviour
 
     private void Awake()
     {
+        // NE PLUS charger automatiquement ici si on utilise WeaponManager
+        // Le WeaponManager s'en chargera après l'instanciation du prefab
+        
         bulletsLeft = magazineSize;
         readyToShoot = true;
-        prevMagazineSize = magazineSize; // <- initialisation de la valeur précédente
-        UpdateAmmoText(); // <- initialisation de l'affichage
+        prevMagazineSize = magazineSize;
+        UpdateAmmoText();
+    }
+    
+    // NOUVELLE MÉTHODE : Initialisation manuelle depuis WeaponManager
+    public void InitializeFromClass(WeaponClass weaponClass)
+    {
+        if (weaponClass == null)
+        {
+            Debug.LogError("[GunSystem] InitializeFromClass : weaponClass est NULL !");
+            return;
+        }
+        
+        Debug.Log($"[GunSystem] Initialisation avec la classe : {weaponClass.className}");
+        LoadStatsFromClass(weaponClass);
+        
+        bulletsLeft = magazineSize;
+        prevMagazineSize = magazineSize;
+        UpdateAmmoText();
+    }
+    
+    private void LoadStatsFromClass(WeaponClass weaponClass)
+    {
+        damage = weaponClass.damage;
+        timeBetweenShooting = weaponClass.timeBetweenShooting;
+        spread = weaponClass.spread;
+        range = weaponClass.range;
+        reloadTime = weaponClass.reloadTime;
+        timeBetweenShots = weaponClass.timeBetweenShots;
+        magazineSize = weaponClass.magazineSize;
+        bulletsPerTap = weaponClass.bulletsPerTap;
+        allowButtonHold = weaponClass.allowButtonHold;
+        
+        if (weaponClass.shootSound != null && audioSource != null)
+        {
+            shootSound = weaponClass.shootSound;
+        }
+        
+        Debug.Log($"[GunSystem] Stats chargées : Dégâts={damage}, Chargeur={magazineSize}");
     }
     private void Update()
     {

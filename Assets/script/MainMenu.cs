@@ -6,17 +6,22 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        // Charger la scène ClassSelection (index 5)
+        SceneManager.LoadScene(5); // ou SceneManager.LoadScene("ClassSelection");
     }
 
     public void Quit()
     {
+        #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-
+        #else
+        Application.Quit();
+        #endif
     }
 
     public void Options()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2);
+        // Charger la scène Options (index 2)
+        SceneManager.LoadScene(2);
     }
 }
