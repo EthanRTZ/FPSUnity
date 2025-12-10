@@ -13,7 +13,7 @@ public class ReceiveDamage : MonoBehaviour
     public bool isInvulnerable;
 
     // Indique si l'entité est déjà morte
-    private bool isDead = false;
+    public bool isDead = false;
     
     // Temps d'invulnérabilité
     public float invulnerabilityTime;
@@ -72,6 +72,10 @@ public class ReceiveDamage : MonoBehaviour
         health = Mathf.Max(0f, health);
         
         Debug.Log($"[ReceiveDamage] Vie après dégâts: {health}/{maxHealth}");
+
+        // Notifier tous les composants que des dégâts ont été reçus (pour réinitialiser les timers de régénération)
+        gameObject.BroadcastMessage("OnDamageTaken", SendMessageOptions.DontRequireReceiver);
+        gameObject.SendMessageUpwards("OnDamageTaken", SendMessageOptions.DontRequireReceiver);
 
         // Informer les composants (enfant/parent) du changement de vie
         // On envoie vers les enfants ET vers les parents pour couvrir toutes les configurations

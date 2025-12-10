@@ -13,7 +13,13 @@ public class Vie: MonoBehaviour
     public Image vieBar;
     public TextMeshProUGUI vieText;
     
+    [Header("Régénération Passive")]
+    public float passiveRegenDelay = 10f; // Délai avant la régénération (en secondes)
+    public float passiveRegenRate = 1f; // Points de vie régénérés par seconde
+    
     private ReceiveDamage receiveDamage;
+    private float timeSinceLastDamage = 0f;
+    private float lastKnownHealth = 0f;
     
     void Start()
     {
@@ -41,6 +47,8 @@ public class Vie: MonoBehaviour
         {
             vieMax = receiveDamage.maxHealth;
             vie = receiveDamage.health;
+            lastKnownHealth = vie;
+            timeSinceLastDamage = 0f;
             Debug.Log($"[Vie] ReceiveDamage trouvé sur {player.name} - Vie: {vie}/{vieMax}");
         }
         else
@@ -67,16 +75,59 @@ public class Vie: MonoBehaviour
         if (receiveDamage != null)
         {
             float newHealth = receiveDamage.health;
+            
+            // Détection de changement de vie
             if (newHealth != vie)
             {
+                // Si la vie a diminué, c'est un dégât
+                if (newHealth < vie)
+                {
+                    timeSinceLastDamage = 0f;
+                    Debug.Log($"[Vie] Dégât détecté - Timer de régénération réinitialisé");
+                }
+                
                 Debug.Log($"[Vie] Changement détecté - Ancienne vie: {vie} - Nouvelle vie: {newHealth}");
                 vie = newHealth;
                 vieMax = receiveDamage.maxHealth;
+                lastKnownHealth = vie;
                 UpdateUI();
+            }
+            
+            // Régénération passive
+            if (vie < vieMax && !receiveDamage.isDead)
+            {
+                timeSinceLastDamage += Time.deltaTime;
+                
+                // Si le délai de régénération est écoulé
+                if (timeSinceLastDamage >= passiveRegenDelay)
+                {
+                    // Régénérer progressivement
+                    float regenAmount = passiveRegenRate * Time.deltaTime;
+                    receiveDamage.health += regenAmount;
+                    receiveDamage.health = Mathf.Min(receiveDamage.health, receiveDamage.maxHealth);
+                    
+                    vie = receiveDamage.health;
+                    
+                    // Notifier les autres composants du changement de vie
+                    if (player != null)
+                    {
+                        player.BroadcastMessage("OnHealthChanged", receiveDamage.health, SendMessageOptions.DontRequireReceiver);
+                        player.SendMessageUpwards("OnHealthChanged", receiveDamage.health, SendMessageOptions.DontRequireReceiver);
+                    }
+                    
+                    UpdateUI();
+                }
             }
         }
     }
     
+    // Appelé par ReceiveDamage quand des dégâts sont reçus
+    void OnDamageTaken()
+    {
+        timeSinceLastDamage = 0f;
+        Debug.Log($"[Vie] OnDamageTaken - Timer de régénération réinitialisé et régénération arrêtée");
+    }
+
     void UpdateUI()
     {
         if (vieBar != null)
