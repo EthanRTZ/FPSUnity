@@ -27,13 +27,19 @@ public class Grenade : MonoBehaviour
     
     private int currentGrenades; // Nombre actuel de grenades
     private float grenadeRegenTimer; // Timer pour la régénération
+    private float noGrenadeMessageTimer; // Timer pour le message "pas de grenade"
+    private bool showingNoGrenadeMessage = false; // Flag pour savoir si on affiche le message
+    private float grenadeTextUpdateTimer = 0f; // Timer pour mettre à jour grenadeText
 
     private void Awake()
     {
         currentGrenades = maxGrenades;
         grenadeRegenTimer = 0f;
+        noGrenadeMessageTimer = 0f;
         UpdateGrenadeText();
-        UpdateNoGrenadeText();
+        // Ne pas afficher le message au démarrage
+        if (noGrenadeText != null)
+            noGrenadeText.gameObject.SetActive(false);
     }
 
     void Update()
@@ -47,15 +53,29 @@ public class Grenade : MonoBehaviour
                 currentGrenades++;
                 grenadeRegenTimer = 0f;
                 UpdateGrenadeText();
-                UpdateNoGrenadeText();
+            }
+
+            // Mettre à jour l'affichage du timer toutes les 0.1 secondes pour afficher le compte à rebours
+            grenadeTextUpdateTimer += Time.deltaTime;
+            if (grenadeTextUpdateTimer >= 0.1f)
+            {
+                UpdateGrenadeText();
+                grenadeTextUpdateTimer = 0f;
             }
         }
 
-        // Mettre à jour l'affichage du timer en temps réel
-        if (currentGrenades < maxGrenades)
+        // Gestion du timer du message "Plus de grenade!"
+        if (showingNoGrenadeMessage)
         {
-            UpdateGrenadeText();
+            noGrenadeMessageTimer += Time.deltaTime;
+            if (noGrenadeMessageTimer >= 3f) // Disparaître après 5 secondes
+            {
+                showingNoGrenadeMessage = false;
+                if (noGrenadeText != null)
+                    noGrenadeText.gameObject.SetActive(false);
+            }
         }
+
 
         if (Input.GetKeyDown(KeyCode.G))
             Launch();
@@ -66,6 +86,14 @@ public class Grenade : MonoBehaviour
         // Vérifier s'il y a des grenades disponibles
         if (currentGrenades <= 0)
         {
+            // Afficher le message "Plus de grenade!" pendant 5 secondes
+            if (noGrenadeText != null)
+            {
+                noGrenadeText.SetText("Plus de grenade!");
+                noGrenadeText.gameObject.SetActive(true);
+                showingNoGrenadeMessage = true;
+                noGrenadeMessageTimer = 0f;
+            }
             return;
         }
 
@@ -113,7 +141,6 @@ public class Grenade : MonoBehaviour
         currentGrenades--;
         grenadeRegenTimer = 0f; // Réinitialiser le timer lors du lancer
         UpdateGrenadeText();
-        UpdateNoGrenadeText();
     }
 
     // Méthode pour mettre à jour l'affichage du nombre de grenades avec timer
@@ -130,22 +157,6 @@ public class Grenade : MonoBehaviour
         else
         {
             grenadeText.SetText(currentGrenades + " / " + maxGrenades);
-        }
-    }
-
-    // Méthode pour mettre à jour le message d'absence de grenades
-    private void UpdateNoGrenadeText()
-    {
-        if (noGrenadeText == null) return;
-        
-        if (currentGrenades <= 0)
-        {
-            noGrenadeText.SetText("Plus de grenade!");
-            noGrenadeText.gameObject.SetActive(true);
-        }
-        else
-        {
-            noGrenadeText.gameObject.SetActive(false);
         }
     }
 }

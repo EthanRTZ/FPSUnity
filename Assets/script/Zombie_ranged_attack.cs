@@ -58,7 +58,7 @@ public class ZombieRangedAttack : MonoBehaviour
         if (rb != null)
         {
             rb.useGravity = false; // Pour qu'il ne tombe pas
-            rb.velocity = direction * projectileSpeed;
+            rb.linearVelocity = direction * projectileSpeed;
         }
 
         // Optionnel : décaler légèrement le projectile devant le zombie
