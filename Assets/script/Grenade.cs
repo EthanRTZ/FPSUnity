@@ -65,6 +65,8 @@ public class GrenadeExplosion : MonoBehaviour
     [HideInInspector] public float damageRadius;
     [HideInInspector] public float damage;
     [HideInInspector] public GameObject explosionEffect;
+    
+    private bool hasExploded = false; // Flag pour éviter les explosions multiples
 
     void Start()
     {
@@ -73,6 +75,15 @@ public class GrenadeExplosion : MonoBehaviour
 
     void Explode()
     {
+        // S'assurer que l'explosion n'est exécutée qu'une seule fois
+        if (hasExploded)
+            return;
+        
+        hasExploded = true;
+        
+        // Annuler tous les Invoke en attente sur ce script
+        CancelInvoke();
+        
         Vector3 pos = transform.position;
 
         // Créer l'effet d'explosion si défini
@@ -80,8 +91,7 @@ public class GrenadeExplosion : MonoBehaviour
         {
             Debug.Log($"[Grenade] Création de l'effet d'explosion à {pos}");
             GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
-            // Détruire l'effet après 5 secondes pour éviter l'accumulation
-            Destroy(effect, 5f);
+            // Ne pas forcer la destruction - l'effet gère lui-même son cycle de vie
         }
         else
         {
@@ -113,6 +123,8 @@ public class GrenadeExplosion : MonoBehaviour
             }
         }
 
+        // Désactiver le GameObject avant destruction pour éviter tout déclenchement supplémentaire
+        gameObject.SetActive(false);
         Destroy(gameObject);
     }
 }
