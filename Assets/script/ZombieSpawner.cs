@@ -14,9 +14,23 @@ public class ZombieSpawner : MonoBehaviour
 
     private int zombiesSpawned = 0;
 
-    void Start()
+    // Ne pas spawner automatiquement au démarrage
+    // void Start()
+    // {
+    //     SpawnAllZombies();
+    // }
+
+    // Méthode publique pour spawner un nombre spécifique de zombies
+    public void SpawnerZombies(int nombre)
     {
-        SpawnAllZombies();
+        zombiesSpawned = 0;
+
+        for (int i = 0; i < nombre; i++)
+        {
+            SpawnZombie();
+        }
+
+        Debug.Log($"✅ {zombiesSpawned} zombie(s) spawné(s) !");
     }
 
     public void SpawnAllZombies()
