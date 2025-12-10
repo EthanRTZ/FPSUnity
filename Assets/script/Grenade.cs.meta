@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0bbb7057b164d874f93841453e2d3304
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - grenade: {fileID: 1698056052845220, guid: 5a2bf64643e1fb0439ea39c0fc9b00ff, type: 3}
+  - explosionEffect: {instanceID: 0}
+  - fpsCam: {instanceID: 0}
+  - attackPoint: {instanceID: 0}
+  - muzzleFlash: {instanceID: 0}
+  - ammunitionDisplay: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
