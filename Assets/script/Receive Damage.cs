@@ -92,6 +92,7 @@ public class ReceiveDamage : MonoBehaviour
             // Marque comme mort pour éviter double traitement
             isDead = true;
             // Notify components on this GameObject AND children, et aussi parents
+            // DefeatManager recevra ce message s'il écoute via BroadcastMessage
             gameObject.BroadcastMessage("Defeated", SendMessageOptions.DontRequireReceiver);
             gameObject.SendMessageUpwards("Defeated", SendMessageOptions.DontRequireReceiver);
         }
