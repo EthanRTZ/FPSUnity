@@ -17,7 +17,7 @@ public class Grenade : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G) || Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.G))
             Launch();
     }
 
