@@ -214,10 +214,14 @@ public class GrenadeExplosion : MonoBehaviour
                 rb.AddExplosionForce(force, pos, radius);
         }
 
-        // Dégâts aux zombies
+        // Dégâts aux zombies (mais pas au joueur)
         Collider[] damageHits = Physics.OverlapSphere(pos, damageRadius);
         foreach (Collider c in damageHits)
         {
+            // Ignorer les objets avec le tag "Player"
+            if (c.CompareTag("Player"))
+                continue;
+            
             // Chercher le composant ReceiveDamage sur l'objet ou ses parents
             ReceiveDamage health = c.GetComponent<ReceiveDamage>();
             if (health == null)
