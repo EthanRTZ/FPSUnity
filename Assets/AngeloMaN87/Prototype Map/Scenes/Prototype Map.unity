@@ -1582,13 +1582,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 877190754}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.01488545, z: -0, w: 0.99988925}
-  m_LocalPosition: {x: -0.32, y: 0.76, z: 0}
+  m_LocalRotation: {x: -0, y: 0.063570365, z: -0, w: 0.9979774}
+  m_LocalPosition: {x: -0.49, y: 0.76, z: 0.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 931741506}
-  m_LocalEulerAnglesHint: {x: 0, y: 1.706, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 7.29, z: 0}
 --- !u!1 &877636000 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6070978432622604036, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
@@ -2531,6 +2531,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 6046356309473137027, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 6070978432622604036, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -2575,12 +2579,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6046356309473137027, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2023966737}
+    - targetCorrespondingSourceObject: {fileID: 6046356309473137027, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2023966738}
     - targetCorrespondingSourceObject: {fileID: 6070978432622604036, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1812057061}
-    - targetCorrespondingSourceObject: {fileID: 6070978432622604036, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1812057066}
   m_SourcePrefab: {fileID: 100100000, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
 --- !u!1 &1491857795
 GameObject:
@@ -3269,37 +3273,6 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 529128345154234252, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
   m_PrefabInstance: {fileID: 1434113238}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1812057066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 877636000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bbb7057b164d874f93841453e2d3304, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grenadePrefab: {fileID: 1698056052845220, guid: 5a2bf64643e1fb0439ea39c0fc9b00ff, type: 3}
-  spawnPoint: {fileID: 877190755}
-  fpsCam: {fileID: 1812057065}
-  forwardSpeed: 10
-  upSpeed: 5
-  explosionDelay: 3
-  explosionRadius: 5
-  explosionForce: 500
-  bounciness: 0.5
-  damageRadius: 3
-  explosionDamage: 50
-  explosionEffect: {fileID: 6879908428401798758, guid: 0208c5b57b965294992c09ebd995ca31, type: 3}
-  launchSound: {fileID: 8300000, guid: a02cf8db4c374b47abe0069fa94873da, type: 3}
-  explosionSound: {fileID: 8300000, guid: a02cf8db4c374b47abe0069fa94873da, type: 3}
-  soundVolume: 1
-  maxGrenades: 3
-  grenadeRegenTime: 60
-  grenadeText: {fileID: 548323529}
-  noGrenadeText: {fileID: 1954992668}
 --- !u!1 &1815609845
 GameObject:
   m_ObjectHideFlags: 0
@@ -4013,6 +3986,37 @@ MonoBehaviour:
   fpsCamera: {fileID: 1812057065}
   ammoText: {fileID: 1512851434}
   weaponAudioSource: {fileID: 0}
+--- !u!114 &2023966738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2023966730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbb7057b164d874f93841453e2d3304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grenadePrefab: {fileID: 1698056052845220, guid: 5a2bf64643e1fb0439ea39c0fc9b00ff, type: 3}
+  spawnPoint: {fileID: 877190755}
+  fpsCam: {fileID: 1812057065}
+  forwardSpeed: 10
+  upSpeed: 5
+  explosionDelay: 2
+  explosionRadius: 5
+  explosionForce: 500
+  bounciness: 0.5
+  damageRadius: 3
+  explosionDamage: 50
+  explosionEffect: {fileID: 6879908428401798758, guid: 0208c5b57b965294992c09ebd995ca31, type: 3}
+  launchSound: {fileID: 8300000, guid: a02cf8db4c374b47abe0069fa94873da, type: 3}
+  explosionSound: {fileID: 8300000, guid: a02cf8db4c374b47abe0069fa94873da, type: 3}
+  soundVolume: 1
+  maxGrenades: 3
+  grenadeRegenTime: 60
+  grenadeText: {fileID: 548323529}
+  noGrenadeText: {fileID: 1954992668}
 --- !u!1 &2129161274
 GameObject:
   m_ObjectHideFlags: 0
