@@ -17,9 +17,9 @@ GameObject:
   - component: {fileID: 5398904513119170272}
   - component: {fileID: 333166338135569469}
   - component: {fileID: 6874883252787742535}
-  - component: {fileID: 3709889193273456414}
+  - component: {fileID: 3298326143410685006}
   m_Layer: 3
-  m_Name: zombieNormal
+  m_Name: zombieExplosif
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  degatsZombie: 10
   currentAction: 
   cliffCheckDistance: 2
   cliffCheckHeight: 5
@@ -199,6 +200,7 @@ MonoBehaviour:
   maxHealth: 100
   health: 100
   isInvulnerable: 0
+  isDead: 0
   invulnerabilityTime: 0
 --- !u!114 &6874883252787742535
 MonoBehaviour:
@@ -214,7 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyDelay: 5
   healthText: {fileID: 675239183576233803}
---- !u!114 &3709889193273456414
+--- !u!114 &3298326143410685006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -223,24 +225,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 3807782870437856622}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3483293f2ea53480f872e0c85907c5cb, type: 3}
+  m_Script: {fileID: 11500000, guid: f2949a56904e97240a5af73227ff8c23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 10
-  attackCooldown: 1
-  attackRadius: 2
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  attackPoint: {fileID: 2040426113485217390}
-  damageMethodNames:
-  - GetDamage
-  - TakeDamage
-  - ApplyDamage
-  animator: {fileID: 0}
-  attackTrigger: Attack
-  uniquePerRoot: 1
-  showDebugLogs: 1
 --- !u!1 &6461384207841427079
 GameObject:
   m_ObjectHideFlags: 0
