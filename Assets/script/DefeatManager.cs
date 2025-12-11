@@ -21,7 +21,6 @@ namespace DefaultNamespace
                 player = GameObject.Find("Player");
                 if (player == null)
                 {
-                    Debug.LogError("[DefeatManager] GameObject Player introuvable !");
                     return;
                 }
             }
@@ -31,11 +30,6 @@ namespace DefaultNamespace
             if (playerHealth == null)
             {
                 playerHealth = player.GetComponentInChildren<ReceiveDamage>();
-            }
-            
-            if (playerHealth == null)
-            {
-                Debug.LogError("[DefeatManager] ReceiveDamage non trouvé sur le joueur !");
             }
         }
         
@@ -51,7 +45,6 @@ namespace DefaultNamespace
         void Defeat()
         {
             isDefeated = true;
-            Debug.Log("[DefeatManager] DÉFAITE - Le joueur est mort !");
             
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.None;

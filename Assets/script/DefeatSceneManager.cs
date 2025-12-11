@@ -19,8 +19,6 @@ namespace DefaultNamespace
         // Rejouer: Defeat(3) -> Prototype Map(1) => -2
         public void Rejouer()
         {
-            Debug.Log("[DefeatSceneManager] Rechargement de la scène de jeu...");
-            
             // Réinitialiser le temps
             Time.timeScale = 1f;
             
@@ -36,8 +34,6 @@ namespace DefaultNamespace
         // Options: Defeat(3) -> Options(2) => -1 (ou charger index 2 directement)
         public void Options()
         {
-            Debug.Log("[DefeatSceneManager] Ouverture des options...");
-            
             // Réinitialiser le temps
             Time.timeScale = 1f;
 
@@ -48,8 +44,6 @@ namespace DefaultNamespace
         // Méthode pour retourner au menu principal
         public void RetournerAuMenu()
         {
-            Debug.Log("[DefeatSceneManager] Retour au menu principal...");
-            
             // Réinitialiser le temps
             Time.timeScale = 1f;
             
@@ -64,8 +58,6 @@ namespace DefaultNamespace
         // Méthode pour quitter le jeu
         public void QuitterJeu()
         {
-            Debug.Log("[DefeatSceneManager] Fermeture du jeu...");
-            
             #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
             #else
