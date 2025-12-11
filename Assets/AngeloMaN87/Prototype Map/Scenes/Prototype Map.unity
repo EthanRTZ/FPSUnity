@@ -1708,7 +1708,7 @@ MonoBehaviour:
   zombieSpawner: {fileID: 1960831876}
   nombreMaxManches: 10
   texteVague: {fileID: 264459967}
-  zombieRestant: {fileID: 1491857796}
+  zombieRestant: {fileID: 0}
 --- !u!4 &939793950
 Transform:
   m_ObjectHideFlags: 0
@@ -2490,6 +2490,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6070978432622604036, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1812057061}
+    - targetCorrespondingSourceObject: {fileID: 6070978432622604036, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1812057066}
   m_SourcePrefab: {fileID: 100100000, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
 --- !u!1 &1491857795
 GameObject:
@@ -3178,6 +3181,37 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 529128345154234252, guid: 7eb1089d2512d45618a37c18895dc138, type: 3}
   m_PrefabInstance: {fileID: 1434113238}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1812057066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877636000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bbb7057b164d874f93841453e2d3304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grenadePrefab: {fileID: 0}
+  spawnPoint: {fileID: 0}
+  fpsCam: {fileID: 0}
+  forwardSpeed: 10
+  upSpeed: 5
+  explosionDelay: 3
+  explosionRadius: 5
+  explosionForce: 500
+  bounciness: 0.5
+  damageRadius: 3
+  explosionDamage: 50
+  explosionEffect: {fileID: 0}
+  launchSound: {fileID: 0}
+  explosionSound: {fileID: 0}
+  soundVolume: 1
+  maxGrenades: 3
+  grenadeRegenTime: 60
+  grenadeText: {fileID: 0}
+  noGrenadeText: {fileID: 0}
 --- !u!1 &1815609845
 GameObject:
   m_ObjectHideFlags: 0
