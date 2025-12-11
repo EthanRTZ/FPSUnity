@@ -214,21 +214,22 @@ public class GrenadeExplosion : MonoBehaviour
                 rb.AddExplosionForce(force, pos, radius);
         }
 
-        // Dégâts aux zombies (mais pas au joueur)
+        // Dégâts aux zombies ET au joueur
         Collider[] damageHits = Physics.OverlapSphere(pos, damageRadius);
+        
+        // Utiliser un HashSet pour s'assurer qu'on n'applique les dégâts qu'une seule fois par GameObject
+        System.Collections.Generic.HashSet<GameObject> damagedObjects = new System.Collections.Generic.HashSet<GameObject>();
+        
         foreach (Collider c in damageHits)
         {
-            // Ignorer les objets avec le tag "Player"
-            if (c.CompareTag("Player"))
-                continue;
-            
             // Chercher le composant ReceiveDamage sur l'objet ou ses parents
             ReceiveDamage health = c.GetComponent<ReceiveDamage>();
             if (health == null)
                 health = c.GetComponentInParent<ReceiveDamage>();
             
-            if (health != null)
+            if (health != null && !damagedObjects.Contains(health.gameObject))
             {
+                damagedObjects.Add(health.gameObject);
                 health.GetDamage(damage);
             }
         }
