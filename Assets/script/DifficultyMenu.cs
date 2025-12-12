@@ -9,6 +9,8 @@ public class DifficultyMenu : MonoBehaviour
     public Color couleurSelectionnee = Color.green;
     public Color couleurNormale = Color.white;
 
+    
+
     void Start()
     {
         // S'assurer que le DifficultyManager existe

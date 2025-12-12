@@ -3,10 +3,25 @@ using UnityEngine;
 public class ZombieSpawner : MonoBehaviour
 {
     [Header("Paramètres de Spawn")]
-    public GameObject zombiePrefab;
+    public GameObject zombie;
+    public GameObject zombieRanged;
+    public GameObject zombieExplosif;
+    public GameObject zombieEnorme;
+
+
+
+
+    public float chanceZombieNormal = 40f; 
+
+    public float chanceZombieRanged = 20f; 
+
+    public float chanceZombieExplosif = 20f; 
+
+    public float chanceZombieEnorme = 20f;
+
     public int numberOfZombies = 5;
-    public float spawnRadius = 30f;
-    public float minDistanceBetweenZombies = 5f;
+    public float spawnRadius = 10f;
+    public float minDistanceBetweenZombies = 0f;
 
     [Header("Zone de Spawn")]
     public Vector3 spawnCenterOffset = Vector3.zero;
@@ -36,18 +51,43 @@ public class ZombieSpawner : MonoBehaviour
     void SpawnZombie()
     {
         Vector3 spawnPosition = GetRandomSpawnPosition();
-        Instantiate(zombiePrefab, spawnPosition, Quaternion.identity);
+
+        GameObject zombieToSpawn = ChoisirTypeZombie();
+
+        
+        Instantiate(zombieToSpawn, spawnPosition, Quaternion.identity);
         zombiesSpawned++;
+       
+    }
+
+    GameObject ChoisirTypeZombie()
+    {
+        float randomValue = Random.Range(0f, 100f);
+
+        if (randomValue < chanceZombieNormal)
+        {
+            return zombie; 
+        }
+        else if (randomValue < chanceZombieNormal + chanceZombieRanged)
+        {
+            return zombieRanged; 
+        }
+        else if (randomValue < chanceZombieNormal + chanceZombieRanged + chanceZombieExplosif)
+        {
+            return zombieExplosif;
+        }
+        else 
+        {
+            return zombieEnorme;
+        }
     }
 
     Vector3 GetRandomSpawnPosition()
     {
-        // Position du spawner + offset configuré
         Vector3 centerPosition = transform.position + spawnCenterOffset;
 
-        // Générer une position aléatoire dans un rayon
         Vector3 randomDirection = Random.insideUnitSphere;
-        randomDirection.y = 0; // Garder la même hauteur
+        randomDirection.y = 0; 
         randomDirection = randomDirection.normalized;
 
         float randomDistance = Random.Range(0f, spawnRadius);
@@ -56,7 +96,6 @@ public class ZombieSpawner : MonoBehaviour
         return spawnPosition;
     }
 
-    // Fonction pour respawner les zombies 
     public void RespawnAllZombies()
     {
         // Détruire tous les zombies existants

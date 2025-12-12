@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using DefaultNamespace;
+using UnityEngine.SceneManagement;
+
 
 public class WaveManager : MonoBehaviour
 {
@@ -8,7 +10,7 @@ public class WaveManager : MonoBehaviour
     public static WaveManager Instance { get; private set; }
 
     [Header("Paramètres des Vagues")]
-    public ZombieSpawner zombieSpawner; // Référence au ZombieSpawner
+    public ZombieSpawner zombieSpawner; 
     public int nombreMaxManches = 10;
 
     [Header("Affichage")]
@@ -65,9 +67,7 @@ public class WaveManager : MonoBehaviour
             if (timerDelaiManche <= 0f)
             {
                 enDelai = false;
-                Debug.Log($"[WaveManager] Délai écoulé, démarrage de la prochaine manche...");
 
-                // Après le délai, démarrer la prochaine manche
                 if (mancheActuelle < nombreMaxManches)
                 {
                     DemarrerProchaineManche();
@@ -77,10 +77,13 @@ public class WaveManager : MonoBehaviour
         // Vérifier si tous les zombies sont morts ET qu'une manche est en cours ET qu'on n'est PAS en délai
         else if (mancheEnCours && zombiesActuels.Count == 0 && !enDelai && mancheActuelle < nombreMaxManches)
         {
-            // Tous les zombies sont morts, on arrête la manche et on lance le délai
             mancheEnCours = false;
             enDelai = true;
             timerDelaiManche = parametresDifficulte.delaiEntreManches;
+        }else if (mancheEnCours && zombiesActuels.Count == 0 && !enDelai && mancheActuelle == nombreMaxManches)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 5);
+
         }
 
 
@@ -107,7 +110,7 @@ public class WaveManager : MonoBehaviour
         if (mancheActuelle > nombreMaxManches)
         {
             return;
-        }
+        } 
 
         // Nombre de zombies = zombiesParManche + (zombiesParManche * (mancheActuelle - 1))
         int zombiesASpawner = parametresDifficulte.zombiesParManche +
