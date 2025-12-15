@@ -10,6 +10,7 @@ public class ZombieRangedAttack : MonoBehaviour
 
     private float nextShotTime = 0f;
     private Transform player;
+    private Transform playerCapsule;     // Transform de la "Capsule" du player à viser
 
     void Start()
     {
@@ -18,6 +19,32 @@ public class ZombieRangedAttack : MonoBehaviour
         if (playerGO != null)
         {
             player = playerGO.transform;
+
+            // On cherche l'enfant nommé "Capsule" directement
+            Transform capsule = playerGO.transform.Find("Capsule");
+
+            // Si non trouvé directement, on cherche dans tous les enfants
+            if (capsule == null)
+            {
+                foreach (Transform t in playerGO.GetComponentsInChildren<Transform>())
+                {
+                    if (t.name == "Capsule")
+                    {
+                        capsule = t;
+                        break;
+                    }
+                }
+            }
+
+            if (capsule != null)
+            {
+                playerCapsule = capsule;
+                Debug.Log("ZombieRangedAttack : cible = " + playerCapsule.name);
+            }
+            else
+            {
+                Debug.LogWarning("ZombieRangedAttack : aucun enfant 'Capsule' trouvé sur Player, le zombie visera player.position (souvent aux pieds).");
+            }
         }
         else
         {
@@ -51,8 +78,18 @@ public class ZombieRangedAttack : MonoBehaviour
         // Instancie le projectile
         GameObject proj = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
 
-        // Calcule la direction vers le joueur
-        Vector3 direction = (player.position - shootPoint.position).normalized;
+        // Calcule la position à viser :
+        // - si on a trouvé l'enfant "Capsule", on vise sa position (au milieu du joueur)
+        // - sinon, on vise player.position (souvent aux pieds)
+        Vector3 targetPos = player.position;
+        if (playerCapsule != null)
+            {
+                // Légèrement au-dessus du centre de la capsule si besoin
+            targetPos = playerCapsule.position + Vector3.up * 0.3f;
+        }
+
+        // Calcule la direction vers la cible
+        Vector3 direction = (targetPos - shootPoint.position).normalized;
 
         Rigidbody rb = proj.GetComponent<Rigidbody>();
         if (rb != null)
