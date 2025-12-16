@@ -6,21 +6,21 @@ public class MeleeAttack : MonoBehaviour
     public int damage = 34;
     public float range = 2.5f;
     public float attackCooldown = 0.5f;
-    
+
     [Header("Détection")]
     public LayerMask whatIsEnemy;
     public Camera fpsCam;
-    
+
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip meleeSound;
     public AudioClip meleeHitSound;
-    
+
     [Header("Effets visuels")]
     public bool useScreenShake = true;
     public float shakeIntensity = 0.1f;
     public float shakeDuration = 0.1f;
-    
+
     private bool readyToAttack = true;
     private float cooldownTimer = 0f;
     private Vector3 originalCameraPosition;
@@ -33,7 +33,7 @@ public class MeleeAttack : MonoBehaviour
         {
             fpsCam = Camera.main;
         }
-        
+
         if (audioSource == null)
         {
             audioSource = GetComponent<AudioSource>();
@@ -42,7 +42,7 @@ public class MeleeAttack : MonoBehaviour
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
         }
-        
+
         if (fpsCam != null)
         {
             originalCameraPosition = fpsCam.transform.localPosition;
@@ -60,7 +60,7 @@ public class MeleeAttack : MonoBehaviour
                 cooldownTimer = 0f;
             }
         }
-        
+
         if (isShaking)
         {
             shakeTimer += Time.deltaTime;
@@ -81,7 +81,7 @@ public class MeleeAttack : MonoBehaviour
                 }
             }
         }
-        
+
         if (Input.GetMouseButtonDown(1) && readyToAttack)
         {
             PerformMeleeAttack();
@@ -91,15 +91,15 @@ public class MeleeAttack : MonoBehaviour
     void PerformMeleeAttack()
     {
         readyToAttack = false;
-        
+
         if (audioSource != null && meleeSound != null)
         {
             audioSource.PlayOneShot(meleeSound);
         }
-        
+
         bool hitSomething = false;
         RaycastHit hit;
-        
+
         if (fpsCam != null && Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range, whatIsEnemy))
         {
             int hitLayer = hit.collider.gameObject.layer;
@@ -110,7 +110,7 @@ public class MeleeAttack : MonoBehaviour
                 {
                     receiveDamage.GetDamage(damage);
                     hitSomething = true;
-                    
+
                     if (audioSource != null && meleeHitSound != null)
                     {
                         audioSource.PlayOneShot(meleeHitSound);
@@ -118,7 +118,7 @@ public class MeleeAttack : MonoBehaviour
                 }
             }
         }
-        
+
         if (hitSomething && useScreenShake)
         {
             StartScreenShake();
