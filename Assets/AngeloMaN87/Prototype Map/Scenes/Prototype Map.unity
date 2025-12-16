@@ -3992,7 +3992,7 @@ MonoBehaviour:
   weaponHolder: {fileID: 682673545}
   fpsCamera: {fileID: 1812057065}
   ammoText: {fileID: 1512851434}
-  weaponAudioSource: {fileID: 0}
+  weaponAudioSource: {fileID: 516603499}
 --- !u!114 &2023966738
 MonoBehaviour:
   m_ObjectHideFlags: 0
