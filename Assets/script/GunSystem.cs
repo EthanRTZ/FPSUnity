@@ -32,7 +32,7 @@ public class GunSystem : MonoBehaviour
     public GameObject muzzleFlash, bulletHoleGraphic;
     public TextMeshProUGUI text;
 
-   public AudioSource audioSource;
+    public AudioSource audioSource;
     public AudioClip shootSound;
 
 
@@ -41,13 +41,22 @@ public class GunSystem : MonoBehaviour
     {
         // NE PLUS charger automatiquement ici si on utilise WeaponManager
         // Le WeaponManager s'en chargera après l'instanciation du prefab
-        
-        bulletsLeft = magazineSize;
+
+        // Synchroniser avec l'inventaire de munitions
+        if (AmmoInventory.Instance != null)
+        {
+            bulletsLeft = AmmoInventory.Instance.GetMagazineAmmo();
+        }
+        else
+        {
+            bulletsLeft = magazineSize;
+        }
+
         readyToShoot = true;
         prevMagazineSize = magazineSize;
         UpdateAmmoText();
     }
-    
+
     // NOUVELLE MÉTHODE : Initialisation manuelle depuis WeaponManager
     public void InitializeFromClass(WeaponClass weaponClass)
     {
@@ -56,15 +65,15 @@ public class GunSystem : MonoBehaviour
             Debug.LogError("[GunSystem] InitializeFromClass : weaponClass est NULL !");
             return;
         }
-        
+
         Debug.Log($"[GunSystem] Initialisation avec la classe : {weaponClass.className}");
         LoadStatsFromClass(weaponClass);
-        
+
         bulletsLeft = magazineSize;
         prevMagazineSize = magazineSize;
         UpdateAmmoText();
     }
-    
+
     private void LoadStatsFromClass(WeaponClass weaponClass)
     {
         damage = weaponClass.damage;
@@ -76,12 +85,12 @@ public class GunSystem : MonoBehaviour
         magazineSize = weaponClass.magazineSize;
         bulletsPerTap = weaponClass.bulletsPerTap;
         allowButtonHold = weaponClass.allowButtonHold;
-        
+
         if (weaponClass.shootSound != null && audioSource != null)
         {
             shootSound = weaponClass.shootSound;
         }
-        
+
         Debug.Log($"[GunSystem] Stats chargées : Dégâts={damage}, Chargeur={magazineSize}");
     }
     private void Update()
@@ -110,11 +119,19 @@ public class GunSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
 
 
-        //Shoot
+        //Shoot - Vérifier qu'on a des munitions dans le chargeur
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
         {
             bulletsShot = bulletsPerTap;
             Shoot();
+        }
+        else if (shooting && bulletsLeft <= 0 && !reloading)
+        {
+            // Clic sur souris mais plus de munitions - auto-reload si possible
+            if (AmmoInventory.Instance != null && AmmoInventory.Instance.GetAmmo() > 0)
+            {
+                Reload();
+            }
         }
     }
     private void Shoot()
@@ -175,7 +192,19 @@ public class GunSystem : MonoBehaviour
         }
 
 
-        bulletsLeft--;
+        // Utiliser une balle de l'inventaire
+        if (AmmoInventory.Instance != null)
+        {
+            if (AmmoInventory.Instance.UseBullet())
+            {
+                bulletsLeft--;
+            }
+        }
+        else
+        {
+            bulletsLeft--;
+        }
+
         bulletsShot--;
 
         UpdateAmmoText(); // <- mise à jour après tir
@@ -198,7 +227,23 @@ public class GunSystem : MonoBehaviour
     }
     private void ReloadFinished()
     {
-        bulletsLeft = magazineSize;
+        // Recharger depuis l'inventaire
+        if (AmmoInventory.Instance != null)
+        {
+            if (AmmoInventory.Instance.Reload(magazineSize))
+            {
+                bulletsLeft = AmmoInventory.Instance.GetMagazineAmmo();
+            }
+            else
+            {
+                if (text != null) text.SetText("No Ammo!");
+            }
+        }
+        else
+        {
+            bulletsLeft = magazineSize;
+        }
+
         reloading = false;
         UpdateAmmoText(); // <- mise à jour après fin de rechargement
     }

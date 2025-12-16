@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 333166338135569469}
   - component: {fileID: 6874883252787742535}
   - component: {fileID: 3298326143410685006}
+  - component: {fileID: 967289983438544592}
   m_Layer: 3
   m_Name: zombieExplosif
   m_TagString: Untagged
@@ -232,6 +233,30 @@ MonoBehaviour:
   explosionDamage: 50
   explosionEffect: {fileID: 0}
   destroyAfterExplosion: 1
+--- !u!114 &967289983438544592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3807782870437856622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee231000b2b1dbcf89fb5e7cb65cb773, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ammoPrefab: {fileID: 7154811456174697606, guid: b25afc6423b0bad6e9dcfdbf9d92fd44, type: 3}
+  grenadePrefab: {fileID: 3889811086796648406, guid: 9b34a82dc499b0d1b812b90a1dc52b9f, type: 3}
+  stimulantPrefab: {fileID: 9197730465694367676, guid: 4db1cfb73692b5a74a3933c420fb1229, type: 3}
+  ammoDropChance: 60
+  grenadeDropChance: 25
+  stimulantDropChance: 15
+  ammoAmountMin: 15
+  ammoAmountMax: 30
+  grenadeAmount: 1
+  stimulantAmount: 1
+  dropHeight: 0.5
+  dropOnDeath: 1
 --- !u!1 &6461384207841427079
 GameObject:
   m_ObjectHideFlags: 0

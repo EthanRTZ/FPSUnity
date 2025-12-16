@@ -18,23 +18,19 @@ public class Grenade : MonoBehaviour
     public AudioClip launchSound; // Son du lancer (optionnel)
     public AudioClip explosionSound; // Son de l'explosion (optionnel)
     public float soundVolume = 1f; // Volume des sons
-    
+
     // Grenades system
-    public int maxGrenades = 3; // Nombre maximum de grenades
-    public float grenadeRegenTime = 60f; // Régénération toutes les 60 secondes
+    public int startingGrenades = 3; // Nombre de grenades au départ
     public TextMeshProUGUI grenadeText; // Texte UI pour afficher le nombre de grenades
     public TextMeshProUGUI noGrenadeText; // Texte UI pour le message "pas de grenade"
-    
+
     private int currentGrenades; // Nombre actuel de grenades
-    private float grenadeRegenTimer; // Timer pour la régénération
     private float noGrenadeMessageTimer; // Timer pour le message "pas de grenade"
     private bool showingNoGrenadeMessage = false; // Flag pour savoir si on affiche le message
-    private float grenadeTextUpdateTimer = 0f; // Timer pour mettre à jour grenadeText
 
     private void Awake()
     {
-        currentGrenades = maxGrenades;
-        grenadeRegenTimer = 0f;
+        currentGrenades = startingGrenades;
         noGrenadeMessageTimer = 0f;
         UpdateGrenadeText();
         // Ne pas afficher le message au démarrage
@@ -44,38 +40,17 @@ public class Grenade : MonoBehaviour
 
     void Update()
     {
-        // Gestion de la régénération des grenades
-        if (currentGrenades < maxGrenades)
-        {
-            grenadeRegenTimer += Time.deltaTime;
-            if (grenadeRegenTimer >= grenadeRegenTime)
-            {
-                currentGrenades++;
-                grenadeRegenTimer = 0f;
-                UpdateGrenadeText();
-            }
-
-            // Mettre à jour l'affichage du timer toutes les 0.1 secondes pour afficher le compte à rebours
-            grenadeTextUpdateTimer += Time.deltaTime;
-            if (grenadeTextUpdateTimer >= 0.1f)
-            {
-                UpdateGrenadeText();
-                grenadeTextUpdateTimer = 0f;
-            }
-        }
-
         // Gestion du timer du message "Plus de grenade!"
         if (showingNoGrenadeMessage)
         {
             noGrenadeMessageTimer += Time.deltaTime;
-            if (noGrenadeMessageTimer >= 3f) // Disparaître après 5 secondes
+            if (noGrenadeMessageTimer >= 3f)
             {
                 showingNoGrenadeMessage = false;
                 if (noGrenadeText != null)
                     noGrenadeText.gameObject.SetActive(false);
             }
         }
-
 
         if (Input.GetKeyDown(KeyCode.G))
             Launch();
@@ -139,25 +114,28 @@ public class Grenade : MonoBehaviour
 
         // Décrémenter le nombre de grenades et mettre à jour l'affichage
         currentGrenades--;
-        grenadeRegenTimer = 0f; // Réinitialiser le timer lors du lancer
         UpdateGrenadeText();
     }
 
-    // Méthode pour mettre à jour l'affichage du nombre de grenades avec timer
+    // Méthode pour mettre à jour l'affichage du nombre de grenades
     private void UpdateGrenadeText()
     {
         if (grenadeText == null) return;
-        
-        if (currentGrenades <= 0)
-        {
-            // Afficher le timer de régénération
-            float timeRemaining = grenadeRegenTime - grenadeRegenTimer;
-            grenadeText.SetText($"0 / {maxGrenades} ({Mathf.Ceil(timeRemaining)}s)");
-        }
-        else
-        {
-            grenadeText.SetText(currentGrenades + " / " + maxGrenades);
-        }
+        grenadeText.SetText($"Grenades: {currentGrenades}");
+    }
+
+
+    public void AddGrenades(int amount)
+    {
+        currentGrenades += amount;
+        UpdateGrenadeText();
+        Debug.Log($"[Grenade] +{amount} grenades. Total: {currentGrenades}");
+    }
+
+
+    public int GetGrenadeCount()
+    {
+        return currentGrenades;
     }
 }
 
@@ -171,7 +149,7 @@ public class GrenadeExplosion : MonoBehaviour
     [HideInInspector] public GameObject explosionEffect;
     [HideInInspector] public AudioClip explosionSound;
     [HideInInspector] public float soundVolume;
-    
+
     private bool hasExploded = false; // Flag pour éviter les explosions multiples
 
     void Start()
@@ -184,12 +162,12 @@ public class GrenadeExplosion : MonoBehaviour
         // S'assurer que l'explosion n'est exécutée qu'une seule fois
         if (hasExploded)
             return;
-        
+
         hasExploded = true;
-        
+
         // Annuler tous les Invoke en attente sur ce script
         CancelInvoke();
-        
+
         Vector3 pos = transform.position;
 
         // Jouer le son d'explosion
@@ -216,17 +194,17 @@ public class GrenadeExplosion : MonoBehaviour
 
         // Dégâts aux zombies ET au joueur
         Collider[] damageHits = Physics.OverlapSphere(pos, damageRadius);
-        
+
         // Utiliser un HashSet pour s'assurer qu'on n'applique les dégâts qu'une seule fois par GameObject
         System.Collections.Generic.HashSet<GameObject> damagedObjects = new System.Collections.Generic.HashSet<GameObject>();
-        
+
         foreach (Collider c in damageHits)
         {
             // Chercher le composant ReceiveDamage sur l'objet ou ses parents
             ReceiveDamage health = c.GetComponent<ReceiveDamage>();
             if (health == null)
                 health = c.GetComponentInParent<ReceiveDamage>();
-            
+
             if (health != null && !damagedObjects.Contains(health.gameObject))
             {
                 damagedObjects.Add(health.gameObject);

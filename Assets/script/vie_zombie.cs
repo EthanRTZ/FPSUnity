@@ -85,14 +85,21 @@ namespace DefaultNamespace
         {
             if (dead) return;
             dead = true;
-            
+
             // Désactiver l'attaque du zombie
             var meleeAttack = GetComponent<zombie_melee_attack>();
             if (meleeAttack != null)
             {
                 meleeAttack.enabled = false;
             }
-            
+
+            // Dropper le loot
+            ZombieLoot loot = GetComponent<ZombieLoot>();
+            if (loot != null)
+            {
+                loot.DropLoot();
+            }
+
             EnableRagdoll();
             Destroy(gameObject, destroyDelay);
         }
