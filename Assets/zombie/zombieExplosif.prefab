@@ -18,7 +18,12 @@ GameObject:
   - component: {fileID: 333166338135569469}
   - component: {fileID: 6874883252787742535}
   - component: {fileID: 3298326143410685006}
+<<<<<<< HEAD
   - component: {fileID: 967289983438544592}
+=======
+  - component: {fileID: 3824201332092473448}
+  - component: {fileID: 8462272513027067610}
+>>>>>>> refs/remotes/origin/main
   m_Layer: 3
   m_Name: zombieExplosif
   m_TagString: Untagged
