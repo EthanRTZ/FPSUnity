@@ -22,5 +22,5 @@ MonoBehaviour:
   magazineSize: 50
   bulletsPerTap: 1
   allowButtonHold: 1
-  shootSound: {fileID: 8300000, guid: a02cf8db4c374b47abe0069fa94873da, type: 3}
+  shootSound: {fileID: 8300000, guid: f68510bfc965844e9b341bcbd67a4c93, type: 3}
   weaponPrefab: {fileID: 1095254202041702, guid: 6273e2936e9d6a24e9f64c7c70d6bd19, type: 3}
