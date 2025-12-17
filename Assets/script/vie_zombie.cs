@@ -93,6 +93,21 @@ namespace DefaultNamespace
                 meleeAttack.enabled = false;
             }
 
+            // Ajouter des points de charge selon le type de zombie
+            if (AbilityChargeSystem.Instance != null)
+            {
+                string zombieName = gameObject.name.ToLower();
+
+                if (zombieName.Contains("ranged") || zombieName.Contains("explosif") || zombieName.Contains("enorme"))
+                {
+                    AbilityChargeSystem.Instance.AddCharge(25);
+                }
+                else
+                {
+                    AbilityChargeSystem.Instance.AddCharge(10);
+                }
+            }
+
             // Dropper le loot
             ZombieLoot loot = GetComponent<ZombieLoot>();
             if (loot != null)

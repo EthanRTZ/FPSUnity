@@ -5,25 +5,29 @@ public class ZombieRangedAttack : MonoBehaviour
     public GameObject projectilePrefab;  // Ton prefab de projectile
     public Transform shootPoint;         // Point d'où part le tir
     public float projectileSpeed = 20f;  // Vitesse du projectile
-    public float attackCooldown = 1f;    // Temps entre chaque tir
+    public float attackCooldown = 2f;    // Temps entre chaque tir (augmenté de 1 à 2 secondes)
     public float attackRange = 50f;      // Distance max pour tirer
 
     private float nextShotTime = 0f;
     private Transform player;
     private Transform playerCapsule;     // Transform de la "Capsule" du player à viser
+    private ReceiveDamage receiveDamage; // Référence pour vérifier si le zombie est mort
 
     void Start()
     {
-        // Cherche le joueur
+        receiveDamage = GetComponentInParent<ReceiveDamage>();
+        if (receiveDamage == null)
+        {
+            receiveDamage = GetComponent<ReceiveDamage>();
+        }
+
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
         if (playerGO != null)
         {
             player = playerGO.transform;
 
-            // On cherche l'enfant nommé "Capsule" directement
             Transform capsule = playerGO.transform.Find("Capsule");
 
-            // Si non trouvé directement, on cherche dans tous les enfants
             if (capsule == null)
             {
                 foreach (Transform t in playerGO.GetComponentsInChildren<Transform>())
@@ -39,16 +43,7 @@ public class ZombieRangedAttack : MonoBehaviour
             if (capsule != null)
             {
                 playerCapsule = capsule;
-                Debug.Log("ZombieRangedAttack : cible = " + playerCapsule.name);
             }
-            else
-            {
-                Debug.LogWarning("ZombieRangedAttack : aucun enfant 'Capsule' trouvé sur Player, le zombie visera player.position (souvent aux pieds).");
-            }
-        }
-        else
-        {
-            Debug.LogError("Player non trouvé ! Vérifie le tag 'Player'");
         }
 
         if (projectilePrefab == null)
@@ -61,9 +56,13 @@ public class ZombieRangedAttack : MonoBehaviour
     {
         if (player == null) return;
 
+        if (receiveDamage != null && receiveDamage.isDead)
+        {
+            return;
+        }
+
         float distance = Vector3.Distance(transform.position, player.position);
 
-        // Vérifie la distance et le cooldown
         if (distance <= attackRange && Time.time >= nextShotTime)
         {
             ShootAtPlayer();
@@ -83,8 +82,8 @@ public class ZombieRangedAttack : MonoBehaviour
         // - sinon, on vise player.position (souvent aux pieds)
         Vector3 targetPos = player.position;
         if (playerCapsule != null)
-            {
-                // Légèrement au-dessus du centre de la capsule si besoin
+        {
+            // Légèrement au-dessus du centre de la capsule si besoin
             targetPos = playerCapsule.position + Vector3.up * 0.3f;
         }
 

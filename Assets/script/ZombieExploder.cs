@@ -14,8 +14,7 @@ public class ZombieExploder : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-        if (player == null)
-            Debug.LogError("ZombieExploder: Player introuvable !");
+    
     }
 
     void Update()
@@ -23,7 +22,6 @@ public class ZombieExploder : MonoBehaviour
         if (hasExploded || player == null) return;
 
         float dist = Vector3.Distance(transform.position, player.position);
-        Debug.Log("Distance au player : " + dist);
 
         if (dist <= autoExplodeDistance)
         {
@@ -36,7 +34,6 @@ public class ZombieExploder : MonoBehaviour
     {
         if (!hasExploded)
         {
-            Debug.Log("Zombie mort → Explosion !");
             Explode();
         }
     }
@@ -46,7 +43,6 @@ public class ZombieExploder : MonoBehaviour
         if (hasExploded) return; // EMPÊCHE la boucle !!!
         hasExploded = true;
 
-        Debug.Log("💥 EXPLOSION !");
 
         // Effet visuel
         if (explosionEffect != null)

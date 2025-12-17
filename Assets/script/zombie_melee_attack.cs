@@ -21,8 +21,7 @@ namespace DefaultNamespace
         public string attackTrigger = "Attack";
         // Option : n'attaquer qu'une fois par root si plusieurs colliders touchent la zone
         public bool uniquePerRoot = true;
-        // Debug : afficher les logs de détection
-        public bool showDebugLogs = true;
+      
 
         float cooldownTimer = -1f; // Changé de 0f à -1f pour permettre attaque immédiate
 
@@ -46,10 +45,7 @@ namespace DefaultNamespace
                 receiveDamage = GetComponentInParent<ReceiveDamage>();
             }
             
-            if (receiveDamage == null && showDebugLogs)
-            {
-                Debug.LogWarning($"[Zombie] ReceiveDamage non trouvé sur {gameObject.name}");
-            }
+          
         }
 
         void Update()
@@ -57,10 +53,7 @@ namespace DefaultNamespace
             // Ne rien faire si le zombie est mort
             if (receiveDamage != null && receiveDamage.health <= 0f)
             {
-                if (showDebugLogs)
-                {
-                    Debug.Log($"[Zombie] {gameObject.name} est mort, arrêt des attaques");
-                }
+                
                 return;
             }
             
@@ -74,11 +67,8 @@ namespace DefaultNamespace
             Vector3 origin = attackPoint != null ? attackPoint.position : transform.position;
             Collider[] hits = Physics.OverlapSphere(origin, attackRadius, targetLayer);
             
-            if (showDebugLogs)
-            {
-                Debug.Log($"[Zombie] Détecte {hits.Length} cible(s) dans rayon {attackRadius}m - Cooldown: {cooldownTimer:F2}s - CanAttack: {cooldownTimer <= 0f}");
-            }
-            
+           
+    
             // Si des cibles sont détectées ET que le cooldown est écoulé
             if (hits.Length > 0 && cooldownTimer <= 0f)
             {
@@ -88,10 +78,7 @@ namespace DefaultNamespace
 
         void Attack(Collider[] hits)
         {
-            if (showDebugLogs)
-            {
-                Debug.Log($"[Zombie] ATTAQUE ! {hits.Length} cible(s) touchée(s)");
-            }
+            
             
             if (animator != null && !string.IsNullOrEmpty(attackTrigger))
             {
@@ -110,11 +97,7 @@ namespace DefaultNamespace
                     if (hitRoots.Contains(root)) continue;
                     hitRoots.Add(root);
                     
-                    if (showDebugLogs)
-                    {
-                        Debug.Log($"[Zombie] Applique {attackDamage} dégâts à {root.name}");
-                    }
-                    
+                  
                     ApplyDamageToTarget(root.gameObject);
                 }
             }
@@ -122,11 +105,7 @@ namespace DefaultNamespace
             {
                 foreach (var col in hits)
                 {
-                    if (showDebugLogs)
-                    {
-                        Debug.Log($"[Zombie] Applique {attackDamage} dégâts à {col.name}");
-                    }
-                    
+                   
                     ApplyDamageToTarget(col.gameObject);
                 }
             }
